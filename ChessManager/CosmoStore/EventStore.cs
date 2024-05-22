@@ -4,32 +4,40 @@ using System.Data;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 
 namespace ChessManager.CosmoStore;
 
-public class EventStore<TPayload, TVersion> : IEventStore<TPayload,TVersion>
+public class EventStore<TPayload, TVersion> : IEventStore<TPayload,TVersion>, IDisposable
 {
     public const string EventCollection = "events";
     public const string StreamCollection = "streams";
-    private readonly IDbConnection _connection;
+    private readonly SqliteConnection _connection;
     private readonly Subject<EventRead<TPayload, TVersion>> _eventAppendedSubject = new Subject<EventRead<TPayload, TVersion>>();
 
 
-    private void setUpEventStore()
+    private async Task SetUpEventStoreAsync()
     {
         Console.WriteLine("Setting up EventStore...");
-        _connection.Open();
+        await _connection.OpenAsync();
         Console.WriteLine("Connection is open");
         // Create Database for streams and events if not exist
-        _connection.Close();
-        Console.WriteLine("Connection is open");
+        await _connection.CloseAsync();
+        Console.WriteLine("Connection is closed");
     }
 
-    public EventStore(IDbConnection connection)
+    private EventStore(SqliteConnection connection)
     {
         _connection = connection;
         EventAppended = _eventAppendedSubject.AsObservable();
         // _eventAppendedSubject.OnNext(eventRead);
+    }
+    
+    public static async Task<EventStore<TPayload, TVersion>> CreateAsync(SqliteConnection connection)
+    {
+        var eventStore = new EventStore<TPayload, TVersion>(connection);
+        await eventStore.SetUpEventStoreAsync();
+        return eventStore;
     }
 
     public Task<EventRead<TPayload, TVersion>> AppendEvent(StreamId streamId, ExpectedVersion<TVersion> expectedVersion, EventWrite<TPayload> eventWrite)
@@ -68,4 +76,11 @@ public class EventStore<TPayload, TVersion> : IEventStore<TPayload,TVersion>
     }
 
     public IObservable<EventRead<TPayload, TVersion>> EventAppended { get; }
+
+    public void Dispose()
+    {
+        _connection.Dispose();
+        _eventAppendedSubject.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

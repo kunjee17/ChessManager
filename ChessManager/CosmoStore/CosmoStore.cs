@@ -31,7 +31,6 @@ namespace ChessManager.CosmoStore
         TVersion Version,
         string Name,
         TPayload Data,
-        TPayload? Metadata,
         DateTime CreatedUtc
     );
 

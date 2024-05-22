@@ -18,7 +18,6 @@ public static class EventConversion
             version,
             x.Name,
             x.Data,
-            x.Metadata,
             createdUtc
         );
     }
