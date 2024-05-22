@@ -11,22 +11,21 @@ public class DummyEventStore : IDisposable
 {
     private const string CosmosConnectionString = "cosmosStoreTest.db";
     public SqliteConnection Connection { get; }
-    public EventStore<Payload,long> TestEventStore { get; }
-    
+    public EventStore<Payload> TestEventStore { get; }
+
     public DummyEventStore()
     {
-        Console.WriteLine("Setup CosmoStoreTests");
         //Create connection for SQLite file database
         const string connectionString = $"Data Source={CosmosConnectionString};";
         Connection = new SqliteConnection(connectionString);
-        TestEventStore = EventStore<Payload,long>.CreateAsync(Connection).Result;
+        TestEventStore = EventStore<Payload>.CreateAsync(Connection).Result;
     }
 
 
     public void Dispose()
     {
         Console.WriteLine("Teardown CosmoStoreTests");
-        //Close any active database connection 
+        //Close any active database connection
         Connection.Close();
         //Delete the database
         if (File.Exists(CosmosConnectionString))
@@ -36,8 +35,8 @@ public class DummyEventStore : IDisposable
         }
         GC.SuppressFinalize(this);
     }
-    
-    
+
+
 }
 
 
@@ -52,13 +51,46 @@ public class CosmoStoreTests
         //Assert
         Assert.Equal(ConnectionState.Open, connection.State);
     }
-    
+
     [Fact]
-    public void EventStoreExists()
+    public async void EventStoreExists()
     {
         //Arrange
-        using var dummyEventStore = new DummyEventStore().TestEventStore;
+        var connection = new SqliteConnection("Data Source=:memory:;Mode=Memory;Cache=Shared;");
+        using var dummyEventStore = await EventStore<Payload>.CreateAsync(connection);
         //Assert
         Assert.NotNull(dummyEventStore);
     }
+
+    [Fact]
+    public void AppendEvent()
+    {
+        //Arrange
+        using var dummyEventStore = new DummyEventStore();
+        var streamId = new StreamId("streamId");
+        var eventWrite = new EventWrite<Payload>("id", "correlationId", "causationId", "name", new Payload("data"));
+        //Act
+        var eventRead = dummyEventStore.TestEventStore.AppendEvent(streamId, eventWrite).Result;
+        //Assert
+        Assert.NotNull(eventRead);
+
+    }
+
+    // [Fact]
+    // public void Append100Events()
+    // {
+    //     //Arrange
+    //     using var dummyEventStore = new DummyEventStore();
+    //     var streamId = new StreamId("streamId");
+    //     var eventWrites = new List<EventWrite<Payload>>();
+    //     for (var i = 0; i < 100; i++)
+    //     {
+    //         eventWrites.Add(new EventWrite<Payload>($"id{i}", "correlationId", "causationId", "name", new Payload($"data{i}")));
+    //     }
+    //     //Act
+    //     var eventReads = dummyEventStore.TestEventStore.AppendEvents(streamId, eventWrites).Result;
+    //     //Assert
+    //     Assert.NotNull(eventReads);
+    //     Assert.Equal(100, eventReads.Count);
+    // }
 }
