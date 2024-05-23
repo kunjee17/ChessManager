@@ -100,17 +100,17 @@ public class EventStore<TPayload> : IEventStore<TPayload>, IDisposable
         await _connection.OpenAsync();
         // Check if stream based on stream id exist
         var existingStream = await _connection.QuerySingleOrDefaultAsync<DbEventStream>($"SELECT * FROM {StreamCollection} WHERE id = @Id LIMIT 1", new { Id = streamId.Value });
-        var lastVersion =  existingStream?.LastVersion ?? 0;
+        var lastVersion = existingStream?.LastVersion ?? 0;
         var nextVersion = lastVersion + 1;
         var ops = eventWrites.Select((x, index) => EventConversion.EventWriteToEventRead(streamId, nextVersion + index, x));
         var updatedStream = new DbEventStream(streamId.Value, lastVersion + eventWrites.Count, DateTime.UtcNow);
         //Insert of update stream
-        await using var tr  = await _connection.BeginTransactionAsync();
-        await _connection.ExecuteAsync($"INSERT INTO {StreamCollection} (id, lastVersion) values (@Id, @LastVersion) ON CONFLICT (id) do update set lastVersion = @LastVersion", new {Id = updatedStream.Id, LastVersion = updatedStream.LastVersion});
+        await using var tr = await _connection.BeginTransactionAsync();
+        await _connection.ExecuteAsync($"INSERT INTO {StreamCollection} (id, lastVersion) values (@Id, @LastVersion) ON CONFLICT (id) do update set lastVersion = @LastVersion", new { Id = updatedStream.Id, LastVersion = updatedStream.LastVersion });
         var eventReads = ops.ToList();
         foreach (var eventRead in eventReads)
         {
-            await _connection.ExecuteAsync($"INSERT INTO {EventCollection} (id, correlationId, causationId, streamId, version, name, data) values (@Id, @CorrelationId, @CausationId, @StreamId, @Version, @Name, @Data)", new {Id = eventRead.Id, CorrelationId = eventRead.CorrelationId, CausationId = eventRead.CausationId, StreamId = eventRead.StreamId.Value, Version = eventRead.Version, Name = eventRead.Name, Data = JsonSerializer.Serialize(eventRead.Data)});
+            await _connection.ExecuteAsync($"INSERT INTO {EventCollection} (id, correlationId, causationId, streamId, version, name, data) values (@Id, @CorrelationId, @CausationId, @StreamId, @Version, @Name, @Data)", new { Id = eventRead.Id, CorrelationId = eventRead.CorrelationId, CausationId = eventRead.CausationId, StreamId = eventRead.StreamId.Value, Version = eventRead.Version, Name = eventRead.Name, Data = JsonSerializer.Serialize(eventRead.Data) });
         }
         await tr.CommitAsync();
 
@@ -170,7 +170,7 @@ public class EventStore<TPayload> : IEventStore<TPayload>, IDisposable
                 .ContinueWith(x => x.Result.Select(x => EventConversion.EventWriteToEventRead(streamId, x.Version,
                     GetEventWriteFromDbEvent(x)))).Result
                 .ToList(),
-            _ => (List<EventRead<TPayload>>) []
+            _ => (List<EventRead<TPayload>>)[]
         });
     }
 

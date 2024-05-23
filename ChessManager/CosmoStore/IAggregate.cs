@@ -25,7 +25,7 @@ public static class AggregateHelper<TState, TCommand, TEvent>
         var events = await store.GetEvents(streamId, range);
         var state = events.Aggregate(aggregate.Init(), (a, b) => aggregate.Apply(a, b.Data));
         var newEvents = aggregate.Execute(state, command).ToList();
-        var resEvents = await store.AppendEvents(streamId,  newEvents);
+        var resEvents = await store.AppendEvents(streamId, newEvents);
         return resEvents;
     }
 }
