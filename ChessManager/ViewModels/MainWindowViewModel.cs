@@ -1,8 +1,19 @@
-﻿namespace ChessManager.ViewModels;
+using System.Reactive;
+using ReactiveUI;
 
-public class MainWindowViewModel : ViewModelBase
+namespace ChessManager.ViewModels;
+
+public class MainWindowViewModel : ViewModelBase, IScreen
 {
-#pragma warning disable CA1822 // Mark members as static
-    public string Greeting => "Welcome to Avalonia!";
-#pragma warning restore CA1822 // Mark members as static
+
+    public RoutingState Router { get; } = new();
+    public ReactiveCommand<Unit, IRoutableViewModel> GoHome { get; }
+    public ReactiveCommand<Unit, IRoutableViewModel> GoTournament { get; }
+
+    public MainWindowViewModel()
+    {
+        Router.Navigate.Execute(new HomeViewModel(this));
+        GoHome = ReactiveCommand.CreateFromObservable(() => Router.Navigate.Execute(new HomeViewModel(this)));
+        GoTournament = ReactiveCommand.CreateFromObservable(() => Router.Navigate.Execute(new TournamentViewModel(this)));
+    }
 }
