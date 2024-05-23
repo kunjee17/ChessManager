@@ -1,16 +1,16 @@
 using System;
+using System.Collections.Generic;
 
 namespace ChessManager.CosmoStore;
 
 public static class EventConversion
 {
-    public static EventRead<TPayload, TVersion> EventWriteToEventRead<TPayload, TVersion>(
+    public static EventRead<TPayload> EventWriteToEventRead<TPayload>(
         StreamId streamId,
-        TVersion version,
-        DateTime createdUtc,
+        long version,
         EventWrite<TPayload> x)
     {
-        return new EventRead<TPayload, TVersion>(
+        return new EventRead<TPayload>(
             x.Id,
             x.CorrelationId,
             x.CausationId,
@@ -18,8 +18,9 @@ public static class EventConversion
             version,
             x.Name,
             x.Data,
-            x.Metadata,
-            createdUtc
+            DateTime.UtcNow
         );
     }
+
+
 }
