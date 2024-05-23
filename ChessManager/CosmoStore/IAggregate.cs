@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ChessManager.CosmoStore;
 
-public interface IAggregate<TState, TCommand, TEvent>
+public interface IAggregate<TState, in TCommand, TEvent>
 {
     TState Init();
     TState Apply(TState state, TEvent @event); // Using '@' symbol to avoid conflicts with keywords
