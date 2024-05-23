@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dapper;
+using DynamicData.Kernel;
 using Microsoft.Data.Sqlite;
 
 namespace ChessManager.CosmoStore;
@@ -21,6 +21,21 @@ public class EventStore<TPayload> : IEventStore<TPayload>, IDisposable
     private readonly SqliteConnection _connection;
     private readonly Subject<EventRead<TPayload>> _eventAppendedSubject = new Subject<EventRead<TPayload>>();
 
+    private DbEvent CreateDbEventFromRow(dynamic x)
+    {
+        return new DbEvent(x.id, x.correlationId, x.causationId, x.streamId, x.version, x.name, x.data, Convert.ToDateTime(x.createdUtc));
+    }
+
+    private DbEventStream CreateDbEventStreamFromRow(dynamic x)
+    {
+        return new DbEventStream(x.id, x.lastVersion, Convert.ToDateTime(x.lastUpdatedUtc));
+    }
+
+    private EventWrite<TPayload> GetEventWriteFromDbEvent(DbEvent x)
+    {
+        return new EventWrite<TPayload>(x.Id, x.CorrelationId, x.CausationId, x.Name,
+            JsonSerializer.Deserialize<TPayload>(x.Data));
+    }
 
     private async Task SetUpEventStoreAsync()
     {
@@ -118,41 +133,32 @@ public class EventStore<TPayload> : IEventStore<TPayload>, IDisposable
         return await ProcessEvents(streamId, eventWrites);
     }
 
-    public Task<EventRead<TPayload>> GetEvent(StreamId streamId, long version)
-    {
-        var filter = new VersionRange(version, version + 1);
-        return GetEvents(streamId, filter).ContinueWith(x => x.Result.First());
-    }
-
     public Task<List<EventRead<TPayload>>> GetEvents(StreamId streamId, EventsReadRange readRange)
     {
         return Task.FromResult(readRange switch
         {
             AllEvents => _connection
-                .QueryAsync<
-                    DbEvent>($"SELECT * FROM {EventCollection} WHERE streamId = @StreamId",
+                .QueryAsync($"SELECT * FROM {EventCollection} WHERE streamId = @StreamId",
                     new { StreamId = streamId.Value })
+                .ContinueWith(x => x.Result.Select(CreateDbEventFromRow))
                 .ContinueWith(x => x.Result.Select(x => EventConversion.EventWriteToEventRead(streamId, x.Version,
-                    new EventWrite<TPayload>(x.Id, x.CorrelationId, x.CausationId, x.Name,
-                        JsonSerializer.Deserialize<TPayload>(x.Data))))).Result
+                    GetEventWriteFromDbEvent(x)))).Result
                 .ToList(),
             FromVersion fromVersion => _connection
-                .QueryAsync<
-                    DbEvent>($"SELECT * FROM {EventCollection} WHERE streamId = @StreamId AND version >= @Version",
+                .QueryAsync($"SELECT * FROM {EventCollection} WHERE streamId = @StreamId AND version >= @Version",
                     new { StreamId = streamId.Value, Version = fromVersion.Version })
+                .ContinueWith(x => x.Result.Select(CreateDbEventFromRow))
                 .ContinueWith(x => x.Result.Select(x => EventConversion.EventWriteToEventRead(streamId, x.Version,
-                    new EventWrite<TPayload>(x.Id, x.CorrelationId, x.CausationId, x.Name,
-                        JsonSerializer.Deserialize<TPayload>(x.Data))))).Result.ToList(),
+                    GetEventWriteFromDbEvent(x)))).Result.ToList(),
             ToVersion toVersion => _connection
-                .QueryAsync<
-                    DbEvent>($"SELECT * FROM {EventCollection} WHERE streamId = @StreamId AND version <= @Version",
+                .QueryAsync($"SELECT * FROM {EventCollection} WHERE streamId = @StreamId AND version <= @Version",
                     new { StreamId = streamId.Value, Version = toVersion.Version })
+                .ContinueWith(x => x.Result.Select(CreateDbEventFromRow))
                 .ContinueWith(x => x.Result.Select(x => EventConversion.EventWriteToEventRead(streamId, x.Version,
-                    new EventWrite<TPayload>(x.Id, x.CorrelationId, x.CausationId, x.Name,
-                        JsonSerializer.Deserialize<TPayload>(x.Data))))).Result
+                    GetEventWriteFromDbEvent(x)))).Result
                 .ToList(),
             VersionRange versionRange => _connection
-                .QueryAsync<DbEvent>(
+                .QueryAsync(
                     $"SELECT * FROM {EventCollection} WHERE streamId = @StreamId AND version >= @FromVersion AND version <= @ToVersion",
                     new
                     {
@@ -160,32 +166,46 @@ public class EventStore<TPayload> : IEventStore<TPayload>, IDisposable
                         FromVersion = versionRange.FromVersion,
                         ToVersion = versionRange.ToVersion
                     })
+                .ContinueWith(x => x.Result.Select(CreateDbEventFromRow))
                 .ContinueWith(x => x.Result.Select(x => EventConversion.EventWriteToEventRead(streamId, x.Version,
-                    new EventWrite<TPayload>(x.Id, x.CorrelationId, x.CausationId, x.Name,
-                        JsonSerializer.Deserialize<TPayload>(x.Data))))).Result
+                    GetEventWriteFromDbEvent(x)))).Result
                 .ToList(),
             _ => (List<EventRead<TPayload>>) []
         });
     }
 
+    public async Task<EventRead<TPayload>> GetEvent(StreamId streamId, long version)
+    {
+        var filter = new VersionRange(version, version + 1);
+        var res = await GetEvents(streamId, filter).ContinueWith(x => x.Result.FirstOrDefault());
+        if (res != null)
+        {
+            return res;
+        }
+        else
+        {
+            throw new Exception("Can't find desired event");
+        }
+    }
+
     public Task<List<EventRead<TPayload>>> GetEventsByCorrelationId(string correlationId)
     {
         return _connection
-            .QueryAsync<DbEvent>($"SELECT * FROM {EventCollection} WHERE correlationId = @CorrelationId",
+            .QueryAsync($"SELECT * FROM {EventCollection} WHERE correlationId = @CorrelationId",
                 new { CorrelationId = correlationId.ToString() })
+            .ContinueWith(x => x.Result.Select(CreateDbEventFromRow))
             .ContinueWith(x => x.Result.Select(x => EventConversion.EventWriteToEventRead(new StreamId(x.StreamId), x.Version,
-                new EventWrite<TPayload>(x.Id, x.CorrelationId, x.CausationId, x.Name,
-                    JsonSerializer.Deserialize<TPayload>(x.Data)))).ToList());
+                GetEventWriteFromDbEvent(x))).ToList());
     }
 
     public Task<List<EventRead<TPayload>>> GetEventsByCausationId(string causationId)
     {
         return _connection
-            .QueryAsync<DbEvent>($"SELECT * FROM {EventCollection} WHERE correlationId = @CausationId",
+            .QueryAsync($"SELECT * FROM {EventCollection} WHERE correlationId = @CausationId",
                 new { CausationId = causationId.ToString() })
+            .ContinueWith(x => x.Result.Select(CreateDbEventFromRow))
             .ContinueWith(x => x.Result.Select(x => EventConversion.EventWriteToEventRead(new StreamId(x.StreamId), x.Version,
-                new EventWrite<TPayload>(x.Id, x.CorrelationId, x.CausationId, x.Name,
-                    JsonSerializer.Deserialize<TPayload>(x.Data)))).ToList());
+                GetEventWriteFromDbEvent(x))).ToList());
     }
 
     public Task<List<Stream>> GetStreams(StreamsReadFilter readFilter)
@@ -193,19 +213,23 @@ public class EventStore<TPayload> : IEventStore<TPayload>, IDisposable
         return readFilter switch
         {
             AllStreams => _connection
-                .QueryAsync<DbEventStream>($"SELECT * FROM {StreamCollection}")
+                .QueryAsync($"SELECT * FROM {StreamCollection}")
+                .ContinueWith(x => x.Result.Select(CreateDbEventStreamFromRow))
                 .ContinueWith(x => x.Result.Select(x => new Stream(new StreamId(x.Id), x.LastVersion, x.LastUpdatedUtc)).ToList()),
             StartsWith startsWith => _connection
-                .QueryAsync<DbEventStream>($"SELECT * FROM {StreamCollection} WHERE id LIKE @Value",
+                .QueryAsync($"SELECT * FROM {StreamCollection} WHERE id LIKE @Value",
                     new { Value = $"{startsWith.Value}%" })
+                .ContinueWith(x => x.Result.Select(CreateDbEventStreamFromRow))
                 .ContinueWith(x => x.Result.Select(x => new Stream(new StreamId(x.Id), x.LastVersion, x.LastUpdatedUtc)).ToList()),
             EndsWith endsWith => _connection
-                .QueryAsync<DbEventStream>($"SELECT * FROM {StreamCollection} WHERE id LIKE @Value",
+                .QueryAsync($"SELECT * FROM {StreamCollection} WHERE id LIKE @Value",
                     new { Value = $"%{endsWith.Value}" })
+                .ContinueWith(x => x.Result.Select(CreateDbEventStreamFromRow))
                 .ContinueWith(x => x.Result.Select(x => new Stream(new StreamId(x.Id), x.LastVersion, x.LastUpdatedUtc)).ToList()),
             Contains contains => _connection
-                .QueryAsync<DbEventStream>($"SELECT * FROM {StreamCollection} WHERE id LIKE @Value",
+                .QueryAsync($"SELECT * FROM {StreamCollection} WHERE id LIKE @Value",
                     new { Value = $"%{contains.Value}%" })
+                .ContinueWith(x => x.Result.Select(CreateDbEventStreamFromRow))
                 .ContinueWith(x => x.Result.Select(x => new Stream(new StreamId(x.Id), x.LastVersion, x.LastUpdatedUtc)).ToList()),
             _ => Task.FromResult(new List<Stream>())
         };
@@ -214,11 +238,12 @@ public class EventStore<TPayload> : IEventStore<TPayload>, IDisposable
     public Task<Stream?> GetStream(StreamId streamId)
     {
         return _connection
-            .QuerySingleOrDefaultAsync<DbEventStream>($"SELECT * FROM {StreamCollection} WHERE id = @Id",
+            .QuerySingleOrDefaultAsync($"SELECT * FROM {StreamCollection} WHERE id = @Id",
                 new { Id = streamId.Value })
             .ContinueWith(x => x.Result != null
-                ? new Stream(new StreamId(x.Result.Id), x.Result.LastVersion, x.Result.LastUpdatedUtc)
-                : null);
+                ? CreateDbEventStreamFromRow(x.Result)
+                : null)
+            .ContinueWith(x => x.Result != null ? new Stream(new StreamId(x.Result.Id), x.Result.LastVersion, x.Result.LastUpdatedUtc) : null);
     }
 
     public IObservable<EventRead<TPayload>> EventAppended { get; }
