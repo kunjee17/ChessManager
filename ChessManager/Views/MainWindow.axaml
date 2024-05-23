@@ -11,33 +11,24 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="ChessManager">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <rxui:RoutedViewHost Grid.Row="0" Router="{Binding Router}">
-            <rxui:RoutedViewHost.DefaultContent>
-                <TextBlock Text="Default content"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center" />
-            </rxui:RoutedViewHost.DefaultContent>
-            <rxui:RoutedViewHost.ViewLocator>
-                <!-- See AppViewLocator.cs section below. Read Doc. This is something important -->
-                <views:AppViewLocator />
-            </rxui:RoutedViewHost.ViewLocator>
-        </rxui:RoutedViewHost>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="15">
-            <StackPanel.Styles>
-                <Style Selector="StackPanel > :is(Control)">
-                    <Setter Property="Margin" Value="2"/>
-                </Style>
-                <Style Selector="StackPanel > TextBlock">
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                </Style>
-            </StackPanel.Styles>
-            <Button Content="Go Home" Command="{Binding GoHome}" />
-            <Button Content="Go Tournament" Command="{Binding GoTournament}" />
-        </StackPanel>
-    </Grid>
+
+        <Grid ColumnDefinitions="3*,7*">
+            <StackPanel Grid.Column="0" Orientation="Vertical">
+                <Button Content="Home" HorizontalAlignment="Stretch" Command="{Binding GoHome}"/>
+                <Button Content="Tournament" HorizontalAlignment="Stretch" Command="{Binding GoTournament}"/>
+            </StackPanel>
+            <Grid Grid.Column="1">
+                <rxui:RoutedViewHost Grid.Row="0" Router="{Binding Router}">
+                    <rxui:RoutedViewHost.DefaultContent>
+                        <TextBlock Text="Default content"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </rxui:RoutedViewHost.DefaultContent>
+                    <rxui:RoutedViewHost.ViewLocator>
+                        <!-- See AppViewLocator.cs section below. Read Doc. This is something important -->
+                        <views:AppViewLocator />
+                    </rxui:RoutedViewHost.ViewLocator>
+                </rxui:RoutedViewHost>
+            </Grid>
+        </Grid>
 </Window>
