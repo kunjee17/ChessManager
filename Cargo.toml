@@ -1,6 +1,6 @@
 [package]
 name = "chessmanager"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["kunjee17"]
 edition = "2021"
 
@@ -26,3 +26,22 @@ inherits = "dev"
 
 [profile.android-dev]
 inherits = "dev"
+
+[profile.release]
+lto = true
+# less code to include into binary
+panic = 'abort'
+# optimization over all codebase ( better optimization, slower build )
+codegen-units = 1
+# optimization for size ( more aggressive )
+opt-level = 'z'
+# optimization for size
+# opt-level = 's'
+# link
+link-arg = "-s"
+
+# Additional recommended settings
+strip = true  # Automatically strip symbols from the binary
+overflow-checks = true  # Enable integer overflow checks even in release
+debug = false  # Remove debug symbols
+incremental = false  # Disable incremental compilation in release builds

@@ -19,3 +19,20 @@ script = []
 # Javascript code file
 # serve: [dev-server] only
 script = []
+
+[bundle]
+identifier = "in.fuzzycloud.chessmanager"
+publisher = "Fuzzy Cloud"
+icon = [
+    "assets/favicon.ico"
+    ]
+copyright = "Copyright 2025 Fuzzy Cloud"
+categories = ["productivity"]
+short_description = "Professional Swiss-style chess tournament management application"
+long_description = "A comprehensive desktop application for organizing and managing Swiss-style chess tournaments. Features include player registration, automated pairing systems, real-time standings, tournament progress tracking, and detailed player statistics. Perfect for chess clubs, tournament directors, and organizers looking to run professional chess events efficiently."
+
+[bundle.windows]
+icon_path = "assets/favicon.ico"
+tsp = true
+allow_downgrades = false
+webview_install_mode = { EmbedBootstrapper = { silent = true } }
