@@ -28,7 +28,7 @@ jobs:
         node-version: '23'
 
     - name: Build Tailwind CSS
-      run: pnpm i && pnpm build
+      run: npm i -g pnpm && pnpm i && pnpm build
 
     - name: Install Dioxus CLI
       run: cargo install dioxus-cli
