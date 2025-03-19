@@ -35,4 +35,4 @@ long_description = "A comprehensive desktop application for organizing and manag
 icon_path = "assets/favicon.ico"
 tsp = true
 allow_downgrades = false
-webview_install_mode = { EmbedBootstrapper = { silent = true } }
+webview_install_mode = { OfflineInstaller = { silent = true } }
