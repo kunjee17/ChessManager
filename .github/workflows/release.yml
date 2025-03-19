@@ -37,12 +37,23 @@ jobs:
       run: |
         dx bundle --release --platform desktop
 
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+    - name: Get Version
+      id: version
+      shell: bash
+      run: |
+        echo "version=$(grep '^version = ' Cargo.toml | cut -d '"' -f2)" >> $GITHUB_OUTPUT
+
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        name: Release ${{ github.ref_name }}
+        name: v${{ steps.version.outputs.version }}
+        tag_name: v${{ steps.version.outputs.version }}
         draft: false
         prerelease: false
         files: |
-          bundle/windows/bundle/* 
+          target/dx/chessmanager/bundle/windows/bundle/* 
