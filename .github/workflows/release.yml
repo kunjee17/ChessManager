@@ -56,4 +56,5 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          target/dx/chessmanager/bundle/windows/bundle/* 
+          target/dx/chessmanager/bundle/windows/bundle/msi/*.msi
+          target/dx/chessmanager/bundle/windows/bundle/nsis/*.exe
