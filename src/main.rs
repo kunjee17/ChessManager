@@ -1,10 +1,13 @@
 use dioxus::prelude::*;
 
 use components::Navbar;
-use views::{Blog, Home};
+use features::{
+    home::Home, options::Options, players::Players, time_calculator::TimeCalculator,
+    tournaments::Tournaments,
+};
 
 mod components;
-mod views;
+mod features;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -12,8 +15,14 @@ enum Route {
     #[layout(Navbar)]
     #[route("/")]
     Home {},
-    #[route("/blog/:id")]
-    Blog { id: i32 },
+    #[route("/tournaments")]
+    Tournaments {},
+    #[route("/players")]
+    Players {},
+    #[route("/options")]
+    Options {},
+    #[route("/timecalc")]
+    TimeCalculator {},
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
