@@ -1,6 +1,6 @@
 [package]
 name = "chessmanager"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["kunjee17"]
 edition = "2021"
 
