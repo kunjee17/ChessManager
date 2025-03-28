@@ -1,0 +1,3 @@
+dx fmt --all-code
+pnpm build 
+dx build

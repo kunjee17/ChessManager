@@ -1,29 +1,18 @@
 use dioxus::prelude::*;
-
 #[component]
 pub fn Options() -> Element {
     rsx! {
         div { class: "p-6",
-            // Header
             div { class: "mb-6",
-                h1 { class: "text-3xl font-bold text-primary",
-                    "Options"
-                }
+                h1 { class: "text-3xl font-bold text-primary", "Options" }
                 p { class: "text-base-content/70 mt-2",
                     "Configure your tournament management settings"
                 }
             }
-
-            // Settings Grid
             div { class: "grid grid-cols-1 lg:grid-cols-2 gap-6",
-                // Tournament Defaults
                 div { class: "card bg-base-200",
                     div { class: "card-body",
-                        h2 { class: "card-title mb-4",
-                            "Tournament Defaults"
-                        }
-
-                        // Default Time Control
+                        h2 { class: "card-title mb-4", "Tournament Defaults" }
                         div { class: "form-control",
                             label { class: "label",
                                 span { class: "label-text", "Default Time Control" }
@@ -34,8 +23,6 @@ pub fn Options() -> Element {
                                 option { value: "blitz", "Blitz (5+3)" }
                             }
                         }
-
-                        // Default Tournament Format
                         div { class: "form-control mt-4",
                             label { class: "label",
                                 span { class: "label-text", "Default Tournament Format" }
@@ -46,8 +33,6 @@ pub fn Options() -> Element {
                                 option { value: "knockout", "Knockout" }
                             }
                         }
-
-                        // Tiebreak Settings
                         div { class: "form-control mt-4",
                             label { class: "label",
                                 span { class: "label-text", "Tiebreak Methods (in order)" }
@@ -69,15 +54,9 @@ pub fn Options() -> Element {
                         }
                     }
                 }
-
-                // Display Settings
                 div { class: "card bg-base-200",
                     div { class: "card-body",
-                        h2 { class: "card-title mb-4",
-                            "Display Settings"
-                        }
-
-                        // Theme
+                        h2 { class: "card-title mb-4", "Display Settings" }
                         div { class: "form-control",
                             label { class: "label",
                                 span { class: "label-text", "Theme" }
@@ -88,8 +67,6 @@ pub fn Options() -> Element {
                                 option { value: "system", "System" }
                             }
                         }
-
-                        // Language
                         div { class: "form-control mt-4",
                             label { class: "label",
                                 span { class: "label-text", "Language" }
@@ -101,8 +78,6 @@ pub fn Options() -> Element {
                                 option { value: "fr", "Français" }
                             }
                         }
-
-                        // Date Format
                         div { class: "form-control mt-4",
                             label { class: "label",
                                 span { class: "label-text", "Date Format" }
@@ -115,15 +90,9 @@ pub fn Options() -> Element {
                         }
                     }
                 }
-
-                // Pairing Settings
                 div { class: "card bg-base-200",
                     div { class: "card-body",
-                        h2 { class: "card-title mb-4",
-                            "Pairing Settings"
-                        }
-
-                        // Color Allocation
+                        h2 { class: "card-title mb-4", "Pairing Settings" }
                         div { class: "form-control",
                             label { class: "label",
                                 span { class: "label-text", "Color Allocation Method" }
@@ -134,8 +103,6 @@ pub fn Options() -> Element {
                                 option { value: "random", "Random with Balance" }
                             }
                         }
-
-                        // Rating System
                         div { class: "form-control mt-4",
                             label { class: "label",
                                 span { class: "label-text", "Rating System" }
@@ -146,8 +113,6 @@ pub fn Options() -> Element {
                                 option { value: "ecf", "ECF" }
                             }
                         }
-
-                        // Pairing Algorithm
                         div { class: "form-control mt-4",
                             label { class: "label",
                                 span { class: "label-text", "Pairing Algorithm" }
@@ -160,15 +125,9 @@ pub fn Options() -> Element {
                         }
                     }
                 }
-
-                // Export Settings
                 div { class: "card bg-base-200",
                     div { class: "card-body",
-                        h2 { class: "card-title mb-4",
-                            "Export Settings"
-                        }
-
-                        // Export Format
+                        h2 { class: "card-title mb-4", "Export Settings" }
                         div { class: "form-control",
                             label { class: "label",
                                 span { class: "label-text", "Default Export Format" }
@@ -179,38 +138,30 @@ pub fn Options() -> Element {
                                 option { value: "pgn", "PGN" }
                             }
                         }
-
-                        // Auto-Export
                         div { class: "form-control mt-4",
                             label { class: "label cursor-pointer",
                                 span { class: "label-text", "Auto-export results after each round" }
                                 input {
                                     r#type: "checkbox",
-                                    class: "toggle toggle-primary"
+                                    class: "toggle toggle-primary",
                                 }
                             }
                         }
-
-                        // Include Ratings
                         div { class: "form-control mt-4",
                             label { class: "label cursor-pointer",
                                 span { class: "label-text", "Include ratings in exports" }
                                 input {
                                     r#type: "checkbox",
                                     class: "toggle toggle-primary",
-                                    checked: true
+                                    checked: true,
                                 }
                             }
                         }
                     }
                 }
             }
-
-            // Save Button
             div { class: "mt-6 flex justify-end",
-                button { class: "btn btn-primary",
-                    "Save Changes"
-                }
+                button { class: "btn btn-primary", "Save Changes" }
             }
         }
     }
