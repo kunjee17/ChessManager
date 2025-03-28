@@ -1,29 +1,21 @@
 use dioxus::prelude::*;
-
 #[component]
 pub fn Players() -> Element {
     rsx! {
         div { class: "p-6",
-            // Header Section
             div { class: "flex justify-between items-center mb-6",
-                h1 { class: "text-3xl font-bold text-primary",
-                    "Players"
-                }
+                h1 { class: "text-3xl font-bold text-primary", "Players" }
                 div { class: "flex gap-4",
                     div { class: "form-control",
                         input {
                             class: "input input-bordered",
                             placeholder: "Search players...",
-                            r#type: "text"
+                            r#type: "text",
                         }
                     }
-                    button { class: "btn btn-primary",
-                        "Add Player"
-                    }
+                    button { class: "btn btn-primary", "Add Player" }
                 }
             }
-
-            // Players List
             div { class: "card bg-base-200",
                 div { class: "card-body",
                     div { class: "overflow-x-auto",
@@ -54,18 +46,12 @@ pub fn Players() -> Element {
                                     td { "FM" }
                                     td { "15" }
                                     td {
-                                        span { class: "badge badge-info",
-                                            "Winter Championship"
-                                        }
+                                        span { class: "badge badge-info", "Winter Championship" }
                                     }
                                     td {
                                         div { class: "flex gap-2",
-                                            button { class: "btn btn-sm btn-info",
-                                                "Profile"
-                                            }
-                                            button { class: "btn btn-sm btn-ghost",
-                                                "History"
-                                            }
+                                            button { class: "btn btn-sm btn-info", "Profile" }
+                                            button { class: "btn btn-sm btn-ghost", "History" }
                                         }
                                     }
                                 }
@@ -84,43 +70,25 @@ pub fn Players() -> Element {
                                     td { "-" }
                                     td { "8" }
                                     td {
-                                        span { class: "badge badge-ghost",
-                                            "None"
-                                        }
+                                        span { class: "badge badge-ghost", "None" }
                                     }
                                     td {
                                         div { class: "flex gap-2",
-                                            button { class: "btn btn-sm btn-info",
-                                                "Profile"
-                                            }
-                                            button { class: "btn btn-sm btn-ghost",
-                                                "History"
-                                            }
+                                            button { class: "btn btn-sm btn-info", "Profile" }
+                                            button { class: "btn btn-sm btn-ghost", "History" }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-
-                    // Pagination
                     div { class: "flex justify-center mt-4",
                         div { class: "join",
-                            button { class: "join-item btn",
-                                "«"
-                            }
-                            button { class: "join-item btn btn-active",
-                                "1"
-                            }
-                            button { class: "join-item btn",
-                                "2"
-                            }
-                            button { class: "join-item btn",
-                                "3"
-                            }
-                            button { class: "join-item btn",
-                                "»"
-                            }
+                            button { class: "join-item btn", "«" }
+                            button { class: "join-item btn btn-active", "1" }
+                            button { class: "join-item btn", "2" }
+                            button { class: "join-item btn", "3" }
+                            button { class: "join-item btn", "»" }
                         }
                     }
                 }

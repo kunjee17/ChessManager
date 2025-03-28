@@ -8,11 +8,32 @@ edition = "2021"
 
 [dependencies]
 dioxus = { version = "0", features = ["router"] }
+sea-orm = { version = "1.1.0", features = [
+    "sqlx-sqlite",
+    "runtime-tokio-rustls",
+    "macros",
+    "debug-print",
+    "with-chrono",
+    "with-json",
+    "with-uuid",
+], optional = true }
+
+uuid = { version = "1.10", features = ["v4"], optional = true }
+chrono = { version = "0.4", optional = true }
+serde = { version = "1.0" }
+serde_json = { version = "1.0" }
+serde_derive = { version = "1.0" }
+anyhow = { version = "1.0" }
+tracing-subscriber = "0.3"
+migration = { path = "migration" }
+dotenv = { version = "0.15" }
+validator = { version = "0", features = ["derive"] }
+tokio = { version = "1", features = ["full"], optional = true }
 
 [features]
 default = ["desktop"]
 web = ["dioxus/web"]
-desktop = ["dioxus/desktop"]
+desktop = ["dioxus/desktop", "dep:sea-orm", "dep:uuid", "dep:chrono", "dep:tokio"]
 mobile = ["dioxus/mobile"]
 
 [profile]
@@ -41,7 +62,7 @@ opt-level = 'z'
 link-arg = "-s"
 
 # Additional recommended settings
-strip = true  # Automatically strip symbols from the binary
-overflow-checks = true  # Enable integer overflow checks even in release
-debug = false  # Remove debug symbols
-incremental = false  # Disable incremental compilation in release builds
+strip = true           # Automatically strip symbols from the binary
+overflow-checks = true # Enable integer overflow checks even in release
+debug = false          # Remove debug symbols
+incremental = false    # Disable incremental compilation in release builds

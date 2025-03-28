@@ -1,17 +1,13 @@
 use crate::Route;
 use dioxus::prelude::*;
-
 #[component]
 pub fn Home() -> Element {
     rsx! {
         div { class: "min-h-screen",
-            // Hero Section
             div { class: "hero bg-base-200 py-12",
                 div { class: "hero-content text-center",
                     div { class: "max-w-2xl",
-                        h1 { class: "text-5xl font-bold mb-8",
-                            "Chess Tournament Manager"
-                        }
+                        h1 { class: "text-5xl font-bold mb-8", "Chess Tournament Manager" }
                         p { class: "text-xl mb-8",
                             "Organize and manage chess tournaments with ease. From Swiss pairings to time management, we've got you covered."
                         }
@@ -23,20 +19,14 @@ pub fn Home() -> Element {
                     }
                 }
             }
-
-            // Quick Actions
             div { class: "container mx-auto px-4 py-8",
-                h2 { class: "text-2xl font-bold mb-6",
-                    "Quick Actions"
-                }
+                h2 { class: "text-2xl font-bold mb-6", "Quick Actions" }
                 div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-                    // Create Tournament Card
                     Link {
                         to: Route::Tournaments {},
                         class: "card bg-primary text-primary-content hover:bg-primary-focus transition-colors",
                         div { class: "card-body",
                             h3 { class: "card-title",
-                                // Trophy icon
                                 svg {
                                     xmlns: "http://www.w3.org/2000/svg",
                                     class: "h-6 w-6",
@@ -47,7 +37,7 @@ pub fn Home() -> Element {
                                         "stroke-linecap": "round",
                                         "stroke-linejoin": "round",
                                         "stroke-width": "2",
-                                        d: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                                        d: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
                                     }
                                 }
                                 "Create Tournament"
@@ -55,14 +45,11 @@ pub fn Home() -> Element {
                             p { "Start a new chess tournament with customizable settings" }
                         }
                     }
-
-                    // Add Players Card
                     Link {
                         to: Route::Players {},
                         class: "card bg-secondary text-secondary-content hover:bg-secondary-focus transition-colors",
                         div { class: "card-body",
                             h3 { class: "card-title",
-                                // Users icon
                                 svg {
                                     xmlns: "http://www.w3.org/2000/svg",
                                     class: "h-6 w-6",
@@ -73,7 +60,7 @@ pub fn Home() -> Element {
                                         "stroke-linecap": "round",
                                         "stroke-linejoin": "round",
                                         "stroke-width": "2",
-                                        d: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                        d: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z",
                                     }
                                 }
                                 "Manage Players"
@@ -81,14 +68,11 @@ pub fn Home() -> Element {
                             p { "Add and manage player profiles and ratings" }
                         }
                     }
-
-                    // Calculate Time Card
                     Link {
                         to: Route::TimeCalculator {},
                         class: "card bg-accent text-accent-content hover:bg-accent-focus transition-colors",
                         div { class: "card-body",
                             h3 { class: "card-title",
-                                // Clock icon
                                 svg {
                                     xmlns: "http://www.w3.org/2000/svg",
                                     class: "h-6 w-6",
@@ -99,7 +83,7 @@ pub fn Home() -> Element {
                                         "stroke-linecap": "round",
                                         "stroke-linejoin": "round",
                                         "stroke-width": "2",
-                                        d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
                                     }
                                 }
                                 "Calculate Time"
@@ -109,19 +93,12 @@ pub fn Home() -> Element {
                     }
                 }
             }
-
-            // Features Section
             div { class: "container mx-auto px-4 py-8",
-                h2 { class: "text-2xl font-bold mb-6",
-                    "Features"
-                }
+                h2 { class: "text-2xl font-bold mb-6", "Features" }
                 div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
-                    // Swiss System
                     div { class: "card bg-base-200",
                         div { class: "card-body",
-                            h3 { class: "card-title",
-                                "Swiss System"
-                            }
+                            h3 { class: "card-title", "Swiss System" }
                             p { "Automatic pairing using the Swiss system with customizable parameters" }
                             ul { class: "mt-4 space-y-2",
                                 li { class: "flex items-center gap-2",
@@ -135,7 +112,7 @@ pub fn Home() -> Element {
                                             "stroke-linecap": "round",
                                             "stroke-linejoin": "round",
                                             "stroke-width": "2",
-                                            d: "M5 13l4 4L19 7"
+                                            d: "M5 13l4 4L19 7",
                                         }
                                     }
                                     "Fair pairings"
@@ -151,7 +128,7 @@ pub fn Home() -> Element {
                                             "stroke-linecap": "round",
                                             "stroke-linejoin": "round",
                                             "stroke-width": "2",
-                                            d: "M5 13l4 4L19 7"
+                                            d: "M5 13l4 4L19 7",
                                         }
                                     }
                                     "Color balance"
@@ -159,13 +136,9 @@ pub fn Home() -> Element {
                             }
                         }
                     }
-
-                    // Time Management
                     div { class: "card bg-base-200",
                         div { class: "card-body",
-                            h3 { class: "card-title",
-                                "Time Management"
-                            }
+                            h3 { class: "card-title", "Time Management" }
                             p { "Comprehensive time control options for different tournament formats" }
                             ul { class: "mt-4 space-y-2",
                                 li { class: "flex items-center gap-2",
@@ -179,7 +152,7 @@ pub fn Home() -> Element {
                                             "stroke-linecap": "round",
                                             "stroke-linejoin": "round",
                                             "stroke-width": "2",
-                                            d: "M5 13l4 4L19 7"
+                                            d: "M5 13l4 4L19 7",
                                         }
                                     }
                                     "Multiple time controls"
@@ -195,7 +168,7 @@ pub fn Home() -> Element {
                                             "stroke-linecap": "round",
                                             "stroke-linejoin": "round",
                                             "stroke-width": "2",
-                                            d: "M5 13l4 4L19 7"
+                                            d: "M5 13l4 4L19 7",
                                         }
                                     }
                                     "Schedule planning"
@@ -203,13 +176,9 @@ pub fn Home() -> Element {
                             }
                         }
                     }
-
-                    // Player Management
                     div { class: "card bg-base-200",
                         div { class: "card-body",
-                            h3 { class: "card-title",
-                                "Player Management"
-                            }
+                            h3 { class: "card-title", "Player Management" }
                             p { "Complete player profile and rating management system" }
                             ul { class: "mt-4 space-y-2",
                                 li { class: "flex items-center gap-2",
@@ -223,7 +192,7 @@ pub fn Home() -> Element {
                                             "stroke-linecap": "round",
                                             "stroke-linejoin": "round",
                                             "stroke-width": "2",
-                                            d: "M5 13l4 4L19 7"
+                                            d: "M5 13l4 4L19 7",
                                         }
                                     }
                                     "Rating tracking"
@@ -239,7 +208,7 @@ pub fn Home() -> Element {
                                             "stroke-linecap": "round",
                                             "stroke-linejoin": "round",
                                             "stroke-width": "2",
-                                            d: "M5 13l4 4L19 7"
+                                            d: "M5 13l4 4L19 7",
                                         }
                                     }
                                     "Performance history"
