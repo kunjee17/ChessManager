@@ -9,12 +9,12 @@ pub fn Home() -> Element {
                     div { class: "max-w-2xl",
                         h1 { class: "text-5xl font-bold mb-8", "Chess Tournament Manager" }
                         p { class: "text-xl mb-8",
-                            "Organize and manage chess tournaments with ease. From Swiss pairings to time management, we've got you covered."
+                            "Organize and manege chess tournaments with ease. From Swiss pairings to time management, we've got you covered."
                         }
                         Link {
                             to: Route::Tournaments {},
                             class: "btn btn-primary btn-lg",
-                            "Get Started"
+                            "Get Starting"
                         }
                     }
                 }
